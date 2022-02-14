@@ -1,10 +1,11 @@
 const express = require('express');
-const {getTopics} = require('./controllers/controllers');
+const {getTopics, getArticleByID} = require('./controllers/controllers');
 
 const app = express();
 app.use(express.json());
 
 app.get('/api/topics', getTopics);
+app.get('/api/articles/:id', getArticleByID);
 
 
 app.all('/*', (req, res) => {
@@ -12,7 +13,7 @@ app.all('/*', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
+
   res.status(500).send({ msg: 'Error 500 - Internal server error' });
   next();
 });
