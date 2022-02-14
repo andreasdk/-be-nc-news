@@ -6,6 +6,26 @@ We will be building an API for the purpose of accessing application data program
 
 Your database will be PSQL, and you will interact with it using [node-postgres](https://node-postgres.com/).
 
+## Deployment
+
+### Local Deployment
+
+Install the dependancies from package.json by running **npm install**
+
+### Instructions
+- Save a copy of this GitHub repository by clicking the 'Clone or download' button at the top of the page, then on 'Download ZIP'. Extract the ZIP file to the folder you will be working in. Alternatively, if you have Git installed locally, you can clone the repository with the following command:
+    - `git clone https://github.com/andreasdk/-be-nc-news`.
+- Open a terminal window and change directory (cd) to the directory you extracted the files in.
+- Create a **.env.test** file with the name of your test PSQL database. It should look something like this:
+```
+PGDATABASE='Your test Postgres database name'
+ 
+```  
+
+The **.env.test** file will allow you to test your code. If you would like to change to a development environment, then you should create a **.env.file** with the name of your development database.
+
+Add all .env files to a gitignore file before pushing to GitHub.
+
 ## Kanban
 
 ### Link to your Trello Board here: https://trello.com/b/wbSooFHD
