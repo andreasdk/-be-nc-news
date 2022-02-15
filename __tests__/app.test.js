@@ -10,6 +10,16 @@ app.use(express.json());
 beforeEach (() => seed(testData))  
 afterAll (()=> db.end())
 
+describe('errors', () => {
+    describe('GET', () => {
+        test('status: 404 - responds with a 404 if route does not exist.', () => {
+            return request(app).get('/api/topic').expect(404).then(({ body }) => {
+                expect(body.msg).toBe('Page Not Found');
+            })
+        })
+    })
+})
+
 describe('/api/topics', () => {
     describe('GET', () => {
         test('status: 200 - responds with an array of all the topic objects.', () => {
@@ -23,11 +33,7 @@ describe('/api/topics', () => {
                 })
             })
         })
-        test('status: 404 - responds with a 404 if route does not exist.', () => {
-            return request(app).get('/api/topic').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Page Not Found');
-            })
-        })
+        
     })
 })
 
@@ -44,11 +50,6 @@ describe('/api/articles/:id', () => {
                         votes: expect.any(Number)
                     })
                     
-            })
-        })
-        test('status: 404 - responds with a 404 if article id is valid but does not exist.', () => {
-            return request(app).get('/api/articles/1000').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Article Not Found');
             })
         })
         test('status: 400 - responds with a 400 error if article id is invalid', () => {
