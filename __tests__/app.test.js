@@ -46,9 +46,14 @@ describe('/api/articles/:id', () => {
                     
             })
         })
-        test('status: 404 - responds with a 404 if route does not exist.', () => {
-            return request(app).get('/api/article/1').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Page Not Found');
+        test('status: 404 - responds with a 404 if article id is valid but does not exist.', () => {
+            return request(app).get('/api/articles/1000').expect(404).then(({ body }) => {
+                expect(body.msg).toBe('Article Not Found');
+            })
+        })
+        test('status: 400 - responds with a 400 error if article id is invalid', () => {
+            return request(app).get('/api/articles/newarticle').expect(400).then(({ body }) => {
+                expect(body.msg).toBe('Bad Request');
             })
         })
     })
