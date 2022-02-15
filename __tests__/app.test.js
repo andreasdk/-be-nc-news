@@ -25,7 +25,7 @@ describe('/api/topics', () => {
         })
         test('status: 404 - responds with a 404 if route does not exist.', () => {
             return request(app).get('/api/topic').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Error 404 - Route not found');
+                expect(body.msg).toBe('Page Not Found');
             })
         })
     })
@@ -34,7 +34,7 @@ describe('/api/topics', () => {
 describe('/api/articles/:id', () => {
     describe('GET', () => {
         test('status: 200 - responds with an article object depending on ID of article.', () => {
-            return request(app).get('/api/articles/1').expect(200).then((response) => {
+            return request(app).get('/api/articles/2').expect(200).then((response) => {
                     expect(response.body.article).toMatchObject({
                         title: expect.any(String),
                         topic: expect.any(String),
@@ -43,21 +43,12 @@ describe('/api/articles/:id', () => {
                         created_at: expect.any(String),
                         votes: expect.any(Number)
                     })
-                    expect(response.body.article).toEqual({
-                        article_id: 1,
-                        title: 'Living in the shadow of a great man',
-                        topic: 'mitch',
-                        author: 'butter_bridge',
-                        body: 'I find this existence challenging',
-                        created_at: '2020-07-09T20:11:00.000Z',
-                        votes: 100
-                    })
-        
+                    
             })
         })
         test('status: 404 - responds with a 404 if route does not exist.', () => {
-            return request(app).get('/api/artikles/1').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Error 404 - Route not found');
+            return request(app).get('/api/article/1').expect(404).then(({ body }) => {
+                expect(body.msg).toBe('Page Not Found');
             })
         })
     })
