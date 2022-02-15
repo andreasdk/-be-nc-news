@@ -1,5 +1,5 @@
 const express = require('express');
-const {getArticleByID} = require('./controllers/articleController');
+const {getArticleByID, patchArticleByID} = require('./controllers/articleController');
 const {getTopics} = require('./controllers/topicsController');
 const {
   handlePSQLErrors,
@@ -8,10 +8,11 @@ const {
 } = require("./errors/errors");
 
 const app = express();
-// app.use(express.json());
+app.use(express.json());
 
 app.get('/api/topics', getTopics);
 app.get('/api/articles/:id', getArticleByID);
+app.patch('/api/articles/:id', patchArticleByID);
 
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Page Not Found" });
