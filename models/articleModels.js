@@ -6,5 +6,9 @@ exports.selectArticleByID = (id) => {
     [id]
     )
     .then(({ rows }) => {
-      return rows[0]});
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Article Not Found' });
+      }
+      return rows[0];
+    });
 };
