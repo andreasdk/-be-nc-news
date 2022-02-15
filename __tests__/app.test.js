@@ -1,11 +1,24 @@
 const request = require('supertest');
+const express = require('express');
 const app = require('../app');
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
 const db = require('../db/connection')
 
+app.use(express.json());
+
 beforeEach (() => seed(testData))  
 afterAll (()=> db.end())
+
+describe('errors', () => {
+    describe('GET', () => {
+        test('status: 404 - responds with a 404 if route does not exist.', () => {
+            return request(app).get('/api/topic').expect(404).then(({ body }) => {
+                expect(body.msg).toBe('Page Not Found');
+            })
+        })
+    })
+})
 
 describe('/api/topics', () => {
     describe('GET', () => {
@@ -20,9 +33,28 @@ describe('/api/topics', () => {
                 })
             })
         })
-        test('status: 404 - responds with a 404 if route does not exist.', () => {
-            return request(app).get('/api/topic').expect(404).then(({ body }) => {
-                expect(body.msg).toBe('Error 404 - Route not found');
+        
+    })
+})
+
+describe('/api/articles/:id', () => {
+    describe('GET', () => {
+        test('status: 200 - responds with an article object depending on ID of article.', () => {
+            return request(app).get('/api/articles/2').expect(200).then((response) => {
+                    expect(response.body.article).toMatchObject({
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    })
+                    
+            })
+        })
+        test('status: 400 - responds with a 400 error if article id is invalid', () => {
+            return request(app).get('/api/articles/newarticle').expect(400).then(({ body }) => {
+                expect(body.msg).toBe('Bad Request');
             })
         })
     })

@@ -1,21 +1,25 @@
 const express = require('express');
-const {getTopics} = require('./controllers/controllers');
+const {getArticleByID} = require('./controllers/articleController');
+const {getTopics} = require('./controllers/topicsController');
+const {
+  handlePSQLErrors,
+  handle500Errors,
+  handleCustomErrors
+} = require("./errors/errors");
 
 const app = express();
-app.use(express.json());
+// app.use(express.json());
 
 app.get('/api/topics', getTopics);
+app.get('/api/articles/:id', getArticleByID);
 
-
-app.all('/*', (req, res) => {
-  res.status(404).send({ msg: 'Error 404 - Route not found' });
+app.all("/*", (req, res, next) => {
+  res.status(404).send({ msg: "Page Not Found" });
 });
 
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(500).send({ msg: 'Error 500 - Internal server error' });
-  next();
-});
+app.use(handlePSQLErrors);
+app.use(handleCustomErrors);
+app.use(handle500Errors);
 
 
 module.exports = app;
