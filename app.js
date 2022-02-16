@@ -1,6 +1,7 @@
 const express = require('express');
 const {getArticleByID, patchArticleByID} = require('./controllers/articleController');
 const {getTopics} = require('./controllers/topicsController');
+const {getAllUsers} = require('./controllers/userController');
 const {
   handlePSQLErrors,
   handle500Errors,
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/topics', getTopics);
+app.get('/api/users', getAllUsers);
 app.get('/api/articles/:id', getArticleByID);
 app.patch('/api/articles/:id', patchArticleByID);
 
