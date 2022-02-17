@@ -76,7 +76,6 @@ describe('/api/articles/:id', () => {
             .get('/api/articles/1')
             .expect(200)
             .then((response) => {
-                console.log(response.body.article)
                     expect(response.body.article).toMatchObject({
                         title: expect.any(String),
                         topic: expect.any(String),
@@ -132,6 +131,39 @@ describe('/api/articles/:id', () => {
                   votes: 80,
                 });
               });
+        })
+    })
+})
+
+describe('/api/articles/:id/comments', () => {
+    describe('GET', () => {
+        test('status: 200 - responds with an comments object depending on ID of article.', () => {
+            return request(app)
+            .get('/api/articles/3/comments')
+            .expect(200)
+            .then((response) => {
+                    expect(response.body.comments).toMatchObject({
+                        comment_id: expect.any(Number),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                    })
+            })
+        })
+        test('status: 400 - responds with a 400 error if article id is invalid', () => {
+            return request(app)
+            .get('/api/articles/newarticle/comments')
+            .expect(400).then(({ body }) => {
+                expect(body.msg).toBe('Bad Request');
+            })
+        })
+        test('status: 404 - responds with a 404 error if article has no comments', () => {
+            return request(app)
+            .get('/api/articles/2/comments')
+            .expect(404).then(({ body }) => {
+                expect(body.msg).toBe('No comments found for this article');
+            })
         })
     })
 })
