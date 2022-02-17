@@ -1,5 +1,18 @@
 const db = require('../db/connection');
 
+exports.selectAllArticles = () => {
+  return db
+  .query('SELECT * FROM articles ORDER BY created_at DESC;', 
+  )
+  .then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: 'Page Not Found' });
+    }
+    console.log(rows);
+    return rows;
+  });
+};
+
 
 exports.selectArticleByID = (id) => {
     return db

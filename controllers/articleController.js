@@ -1,5 +1,11 @@
-const {selectArticleByID, patchArticleModel} = require('../models/articleModels.js');
+const {selectArticleByID, patchArticleModel, selectAllArticles} = require('../models/articleModels.js');
 
+exports.getAllArticles = (req, res, next) => {
+  selectAllArticles().then((articles) => {
+    res.status(200).send({ articles });
+  })
+  .catch(next);
+};
 
 exports.getArticleByID = (req, res, next) => {
   const { id }  = req.params;
