@@ -73,16 +73,18 @@ describe('/api/articles/:id', () => {
     describe('GET', () => {
         test('status: 200 - responds with an article object depending on ID of article.', () => {
             return request(app)
-            .get('/api/articles/2')
+            .get('/api/articles/1')
             .expect(200)
             .then((response) => {
+                console.log(response.body.article)
                     expect(response.body.article).toMatchObject({
                         title: expect.any(String),
                         topic: expect.any(String),
                         author: expect.any(String),
                         body: expect.any(String),
                         created_at: expect.any(String),
-                        votes: expect.any(Number)
+                        votes: expect.any(Number),
+                        comment_count: 11,
                     })
             })
         })
