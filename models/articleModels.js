@@ -8,7 +8,6 @@ exports.selectAllArticles = () => {
     if (rows.length === 0) {
       return Promise.reject({ status: 404, msg: 'Page Not Found' });
     }
-    console.log(rows);
     return rows;
   });
 };
@@ -16,7 +15,7 @@ exports.selectAllArticles = () => {
 
 exports.selectArticleByID = (id) => {
     return db
-    .query('SELECT * FROM articles WHERE article_id = $1;', 
+    .query('SELECT a.*, COUNT(c.comment_id)::int AS comment_count FROM articles a FULL JOIN comments c ON a.article_id = c.article_id WHERE a.article_id = $1 GROUP BY a.article_id;', 
     [id]
     )
     .then(({ rows }) => {
