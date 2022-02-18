@@ -37,9 +37,6 @@ exports.selectArticleByID = (id) => {
     });
 };
 
-
-
-
 exports.patchArticleModel = (id, votes) => {
   return db
     .query(
@@ -47,6 +44,22 @@ exports.patchArticleModel = (id, votes) => {
       [votes, id]
     )
     .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
+exports.postCommentModel = (id, comment) => {
+  const { username, body } = comment;
+  
+  let queryStr = `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`
+  return db
+    .query(
+      queryStr, [username, body, id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Article Not Found' });
+      }
       return rows[0];
     });
 };
