@@ -12,6 +12,17 @@ exports.selectAllArticles = () => {
   });
 };
 
+exports.selectArticleCommentsByID = (id) => {
+  return db
+  .query('SELECT comment_id, body, votes, author, created_at FROM comments WHERE article_id = $1;', 
+  [id]
+  )
+  
+  .then(({ rows }) => {
+    return rows;
+  });
+};
+
 
 exports.selectArticleByID = (id) => {
     return db
@@ -20,11 +31,13 @@ exports.selectArticleByID = (id) => {
     )
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Page Not Found' });
+        return Promise.reject({ status: 404, msg: 'Article Not Found' });
       }
       return rows[0];
     });
 };
+
+
 
 
 exports.patchArticleModel = (id, votes) => {
