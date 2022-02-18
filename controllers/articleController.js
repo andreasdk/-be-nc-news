@@ -15,10 +15,12 @@ exports.getArticleByID = (req, res, next) => {
   .catch(next);
 };
 
+
 exports.getArticleCommentsByID = (req, res, next) => {
   const { id }  = req.params;
-  selectArticleCommentsByID(id).then((comments) => {
-    res.status(200).send({ comments });
+  Promise.all([selectArticleCommentsByID(id),selectArticleByID(id)])
+  .then((promises) => {
+    res.status(200).send({ comments: promises[0] });
   })
   .catch(next);
 };

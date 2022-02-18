@@ -137,17 +137,34 @@ describe('/api/articles/:id', () => {
 
 describe('/api/articles/:id/comments', () => {
     describe('GET', () => {
-        test('status: 200 - responds with an comments object depending on ID of article.', () => {
+        test('status: 200 - responds with an comments object if article ID is valid.', () => {
             return request(app)
             .get('/api/articles/3/comments')
             .expect(200)
             .then((response) => {
-                    expect(response.body.comments).toMatchObject({
+                expect(response.body.comments).toHaveLength(2)
+                response.body.comments.forEach((comment) => {
+                    expect(comment).toMatchObject({
                         comment_id: expect.any(Number),
                         author: expect.any(String),
                         body: expect.any(String),
                         created_at: expect.any(String),
                         votes: expect.any(Number),
+                    })
+                })
+            })
+        })
+        test('status: 200 - responds with an comments object depending on ID of article.', () => {
+            return request(app)
+            .get('/api/articles/3/comments')
+            .expect(200)
+            .then((response) => {
+                    expect(response.body.comments[0]).toEqual({
+                        comment_id: 10,
+                        author:  'icellusedkars',
+                        body: 'git push origin master',
+                        created_at: '2020-06-20T07:24:00.000Z',
+                        votes: 0,
                     })
             })
         })
@@ -158,11 +175,20 @@ describe('/api/articles/:id/comments', () => {
                 expect(body.msg).toBe('Bad Request');
             })
         })
-        test('status: 404 - responds with a 404 error if article has no comments', () => {
+        test('status 200 - returns an empty array if article id is valid but article has no comments', () => {
             return request(app)
-            .get('/api/articles/2/comments')
+              .get("/api/articles/2/comments")
+              .expect(200)
+              .then((response) => {
+                expect(response.body.comments).toHaveLength(0);
+                expect(response.body.comments).toEqual([]);
+              });
+          });
+        test('status: 404 - responds with a 404 error if article_id is invalid', () => {
+            return request(app)
+            .get('/api/articles/1000/comments')
             .expect(404).then(({ body }) => {
-                expect(body.msg).toBe('No comments found for this article');
+                expect(body.msg).toBe('Article Not Found');
             })
         })
     })
