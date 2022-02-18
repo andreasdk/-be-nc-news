@@ -1,5 +1,6 @@
-const {selectArticleByID, patchArticleModel, selectAllArticles, selectArticleCommentsByID, postCommentModel} = require('../models/articleModels.js');
-const {checkUserExists, checkTopicExists} = require('../models/utils')
+const {selectArticleByID, patchArticleModel, selectAllArticles,
+   selectArticleCommentsByID, postCommentModel, deleteCommentById} = require('../models/articleModels.js');
+const {checkUserExists, checkTopicExists, checkCommentIdExists} = require('../models/utils')
 
 
 exports.getAllArticles = (req, res, next) => {
@@ -60,6 +61,22 @@ exports.postCommentById = (req, res, next) => {
     res.status(201).send({ comment })
   })
   .catch(err => {
+    next(err)
+  })
+}
+
+exports.removeCommentByID = (req, res, next) => {
+  const { comment_id } = req.params
+
+  checkCommentIdExists(comment_id)
+  .then(() => {
+    return deleteCommentById(comment_id)
+  })
+  .then(() => {
+    res.sendStatus(204)
+  })
+  .catch(err => {
+    console.log(err)
     next(err)
   })
 }

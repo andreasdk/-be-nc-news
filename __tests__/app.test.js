@@ -275,6 +275,32 @@ describe('/api/articles/:id/comments', () => {
 				})
         })
     })
+    describe('DELETE', () => {
+		test('status: 204 - responds with empty body ', () => {
+			return request(app)
+				.delete('/api/comments/1')
+				.expect(204)
+				.then(({ body }) => {
+					expect(body).toEqual({})
+				})
+		})
+		// test('status: 400 - responds with an error message for invalid comment_id', () => {
+		// 	return request(app)
+		// 		.delete('/api/comments/an-invalid-id')
+		// 		.expect(400)
+		// 		.then(({ body: { msg } }) => {
+		// 			expect(msg).toBe('Bad Request')
+		// 		})
+		// })
+		// test('status: 404 - responds with an error message for valid but non existing comment_id', () => {
+		// 	return request(app)
+		// 		.delete('/api/comments/99')
+		// 		.expect(404)
+		// 		.then(({ body: { msg } }) => {
+		// 			expect(msg).toBe('Comment Not Found')
+		// 		})
+		// })
+	})
 })
 
 describe('/api/users', () => {
