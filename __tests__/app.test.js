@@ -50,22 +50,63 @@ describe('/api/articles/', () => {
             .get('/api/articles/')
             .expect(200)
             .then(( {body : {articles} } ) => {
-                expect(articles).toBeSortedBy("created_at", {
+                expect(articles).toBeSortedBy('created_at', {
                     descending: true,
                 });
                 expect(articles).toHaveLength(12);
                 articles.forEach((article) => {
-                    expect(article).toMatchObject({
-                        title: expect.any(String),
-                        topic: expect.any(String),
-                        author: expect.any(String),
-                        body: expect.any(String),
-                        created_at: expect.any(String),
-                        votes: expect.any(Number)
-                    })
-                 });
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            title: expect.any(String),
+                            article_id: expect.any(Number),
+                            topic: expect.any(String),
+                            author: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            comment_count: expect.any(String),
+                        })
+                    )
                 });
-        })  
+            });
+        })
+        // tests that articles are ordered by votes in descending
+		test('status: 200 - articles sorted by votes in descending order ', () => {
+			return request(app)
+				.get('/api/articles?sort_by=votes')
+				.expect(200)
+				.then(({ body: { articles } }) => {
+					expect(articles).toBeSortedBy('votes', { descending: true })
+				})
+		})
+		// tests that articles are ordered by votes in ascending
+		test('status: 200 - articles sorted by votes in ascending order', () => {
+			return request(app)
+				.get('/api/articles?sort_by=votes&order=asc')
+				.expect(200)
+				.then(({ body: { articles } }) => {
+					expect(articles).toBeSortedBy('votes')
+				})
+		})
+		test('status: 200 returns an array of article objects that are filtered by topic ', () => {
+			return request(app)
+				.get('/api/articles?topic=cats')
+				.expect(200)
+				.then(({ body: { articles } }) => {
+					articles.forEach(article => {
+						expect(article).toEqual(
+							expect.objectContaining({
+								title: expect.any(String),
+								article_id: expect.any(Number),
+								topic: 'cats',
+								author: expect.any(String),
+								created_at: expect.any(String),
+								votes: expect.any(Number),
+								comment_count: expect.any(String),
+							})
+						)
+					})
+				})
+		})  
     })
 })
 
@@ -105,11 +146,11 @@ describe('/api/articles/:id', () => {
             .then(({ body }) => {
                 expect(body.article).toEqual({
                   article_id: 1,
-                  title: "Living in the shadow of a great man",
-                  topic: "mitch",
-                  author: "butter_bridge",
-                  body: "I find this existence challenging",
-                  created_at: "2020-07-09T20:11:00.000Z",
+                  title: 'Living in the shadow of a great man',
+                  topic: 'mitch',
+                  author: 'butter_bridge',
+                  body: 'I find this existence challenging',
+                  created_at: '2020-07-09T20:11:00.000Z',
                   votes: 102,
                 });
               });
@@ -123,11 +164,11 @@ describe('/api/articles/:id', () => {
             .then(({ body }) => {
                 expect(body.article).toEqual({
                   article_id: 1,
-                  title: "Living in the shadow of a great man",
-                  topic: "mitch",
-                  author: "butter_bridge",
-                  body: "I find this existence challenging",
-                  created_at: "2020-07-09T20:11:00.000Z",
+                  title: 'Living in the shadow of a great man',
+                  topic: 'mitch',
+                  author: 'butter_bridge',
+                  body: 'I find this existence challenging',
+                  created_at: '2020-07-09T20:11:00.000Z',
                   votes: 80,
                 });
               });
@@ -177,7 +218,7 @@ describe('/api/articles/:id/comments', () => {
         })
         test('status 200 - returns an empty array if article id is valid but article has no comments', () => {
             return request(app)
-              .get("/api/articles/2/comments")
+              .get('/api/articles/2/comments')
               .expect(200)
               .then((response) => {
                 expect(response.body.comments).toHaveLength(0);
@@ -194,17 +235,17 @@ describe('/api/articles/:id/comments', () => {
     })
     describe('POST', () => {
         test('status: 201 - responds with a comments object if article ID is valid.', () => {
-            const newComment = { username: "rogersop", body: "Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken." }
+            const newComment = { username: 'rogersop', body: 'Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken.' }
             return request(app)
             .post('/api/articles/2/comments')
             .send(newComment)
             .expect(201)
             .then(({ body: { comment } }) => {
-                expect(comment.body).toEqual("Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken.")
+                expect(comment.body).toEqual('Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken.')
             })
         })
-        test("status: 404 - responds with 404 error message when username doesn't exist", () => {
-			const newComment = { username: "user123", body: "Bacon ipsum dolor amet" }
+        test('status: 404 - responds with 404 error message when username non existant in db', () => {
+			const newComment = { username: 'user123', body: 'Bacon ipsum dolor amet' }
 			return request(app)
 				.post('/api/articles/2/comments')
 				.send(newComment)
@@ -213,8 +254,8 @@ describe('/api/articles/:id/comments', () => {
 					expect(msg).toBe('Error: User Not Found')
 				})
 		})
-        test("status: 404: Responds with 404 error when an non existant article id is passed", () => {
-            const newComment = { username: "rogersop", body: "This is a test comment" };
+        test('status: 404: Responds with 404 error when an non existant article id is passed', () => {
+            const newComment = { username: 'rogersop', body: 'This is a test comment' };
             return request(app)
               .post('/api/articles/5555555/comments')
               .send(newComment)
@@ -224,9 +265,9 @@ describe('/api/articles/:id/comments', () => {
               });
           });
         test('status: 400 - responds with 400 error msg when comment body is empty', () => {
-			const newComment = { username: "rogersop" }
+			const newComment = { username: 'rogersop' }
 			return request(app)
-				.post("/api/articles/1/comments")
+				.post('/api/articles/1/comments')
 				.send(newComment)
 				.expect(400)
 				.then(({ body: { msg } }) => {

@@ -1,12 +1,22 @@
 const {selectArticleByID, patchArticleModel, selectAllArticles, selectArticleCommentsByID, postCommentModel} = require('../models/articleModels.js');
-const {checkUserExists} = require('../models/utils')
+const {checkUserExists, checkTopicExists} = require('../models/utils')
+
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles().then((articles) => {
-    res.status(200).send({ articles });
-  })
-  .catch(next);
-};
+	const { sort_by, order, topic } = req.query
+
+	return Promise.all([
+		selectAllArticles(sort_by, order, topic),
+		topic ? checkTopicExists(topic) : null,
+	])
+		.then(([articles]) => {
+			res.status(200).send({ articles })
+		})
+		.catch(err => {
+			next(err)
+		})
+}
+
 
 exports.getArticleByID = (req, res, next) => {
   const { id }  = req.params;
