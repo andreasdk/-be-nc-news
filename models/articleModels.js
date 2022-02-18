@@ -1,6 +1,6 @@
 const db = require('../db/connection');
 
-exports.selectAllArticles = (sort_by = "created_at", order = "desc", topic) => {
+exports.selectAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
   let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, 
 	COUNT(comments.article_id) AS comment_count 
 	FROM articles
@@ -26,7 +26,6 @@ exports.selectArticleCommentsByID = (id) => {
   .query('SELECT comment_id, body, votes, author, created_at FROM comments WHERE article_id = $1;', 
   [id]
   )
-  
   .then(({ rows }) => {
     return rows;
   });
@@ -72,3 +71,18 @@ exports.postCommentModel = (id, comment) => {
       return rows[0];
     });
 };
+
+exports.deleteCommentById = (id) => {
+	return db
+  .query(`DELETE FROM comments WHERE comment_id = $1`, [id])
+  .then(({ rows }) => {
+    if (rows === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: `No comment exists for: ${id}`,
+      });
+
+    }
+  });
+}
+
