@@ -1,15 +1,24 @@
 const db = require('../db/connection');
 
-exports.selectAllArticles = () => {
-  return db
-  .query('SELECT * FROM articles ORDER BY created_at DESC;', 
-  )
-  .then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: 'Page Not Found' });
-    }
-    return rows;
-  });
+exports.selectAllArticles = (sort_by = "created_at", order = "desc", topic) => {
+  let queryStr = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, 
+	COUNT(comments.article_id) AS comment_count 
+	FROM articles
+	LEFT JOIN comments ON comments.article_id = articles.article_id`
+
+  const filterValues = []
+	if (topic) {
+		queryStr += ` WHERE articles.topic ILIKE $1`
+		filterValues.push(topic)
+	}
+
+  
+  queryStr += ` GROUP BY articles.article_id
+	ORDER BY ${sort_by} ${order};`
+
+	return db.query(queryStr, filterValues).then(({ rows: articles }) => {
+		return articles;
+	})
 };
 
 exports.selectArticleCommentsByID = (id) => {
