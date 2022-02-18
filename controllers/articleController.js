@@ -1,4 +1,5 @@
-const {selectArticleByID, patchArticleModel, selectAllArticles, selectArticleCommentsByID} = require('../models/articleModels.js');
+const {selectArticleByID, patchArticleModel, selectAllArticles, selectArticleCommentsByID, postCommentModel} = require('../models/articleModels.js');
+const {checkUserExists} = require('../models/utils')
 
 exports.getAllArticles = (req, res, next) => {
   selectAllArticles().then((articles) => {
@@ -35,3 +36,20 @@ exports.patchArticleByID = (req, res, next) => {
   })
   .catch(next);
 };
+
+exports.postCommentById = (req, res, next) => {
+	const {id} = req.params;
+  const comment_data = req.body;
+  const username = req.body.username;
+  
+  checkUserExists(username)
+  .then(() => {
+    return postCommentModel(id, comment_data)
+  })
+  .then(comment => {
+    res.status(201).send({ comment })
+  })
+  .catch(err => {
+    next(err)
+  })
+}

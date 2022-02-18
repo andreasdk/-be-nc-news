@@ -192,6 +192,48 @@ describe('/api/articles/:id/comments', () => {
             })
         })
     })
+    describe('POST', () => {
+        test('status: 201 - responds with a comments object if article ID is valid.', () => {
+            const newComment = { username: "rogersop", body: "Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken." }
+            return request(app)
+            .post('/api/articles/2/comments')
+            .send(newComment)
+            .expect(201)
+            .then(({ body: { comment } }) => {
+                expect(comment.body).toEqual("Bacon ipsum dolor amet burgdoggen venison t-bone swine chicken.")
+            })
+        })
+        test("status: 404 - responds with 404 error message when username doesn't exist", () => {
+			const newComment = { username: "user123", body: "Bacon ipsum dolor amet" }
+			return request(app)
+				.post('/api/articles/2/comments')
+				.send(newComment)
+				.expect(404)
+				.then(({ body: { msg } }) => {
+					expect(msg).toBe('Error: User Not Found')
+				})
+		})
+        test("status: 404: Responds with 404 error when an non existant article id is passed", () => {
+            const newComment = { username: "rogersop", body: "This is a test comment" };
+            return request(app)
+              .post('/api/articles/5555555/comments')
+              .send(newComment)
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe('Page Not Found');
+              });
+          });
+        test('status: 400 - responds with 400 error msg when comment body is empty', () => {
+			const newComment = { username: "rogersop" }
+			return request(app)
+				.post("/api/articles/1/comments")
+				.send(newComment)
+				.expect(400)
+				.then(({ body: { msg } }) => {
+					expect(msg).toBe('Bad Request')
+				})
+        })
+    })
 })
 
 describe('/api/users', () => {
