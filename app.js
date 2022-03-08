@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = req('cors');
+const cors = require('cors');
 const {getArticleByID, patchArticleByID, getAllArticles, getArticleCommentsByID, postCommentById, removeCommentByID} = require('./controllers/articleController');
 const {getTopics} = require('./controllers/topicsController');
 const {getAllUsers} = require('./controllers/userController');
@@ -11,11 +11,7 @@ const {
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://tranquil-hamlet-45234.herokuapp.com",
-  })
-)
+app.use(cors());
 
 app.get('/api/topics', getTopics);
 app.get('/api/users', getAllUsers);
